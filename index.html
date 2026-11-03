@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doodle Cafe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap');
+
+:root {
+  --pink: #f5b9c8;
+  --blue: #b9dced;
+  --yellow: #f7df9d;
+  --cream: #fff9ed;
+  --brown: #72534a;
+  --outline: #795b51;
+  --green: #c5d9b5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #fff5e8;
+  color: var(--brown);
+  font-family: 'Quicksand', sans-serif;
+  padding: 18px;
+}
+
+button { font-family: inherit; }
+
+.game {
+  max-width: 1050px;
+  margin: auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: #b86f81;
+}
+
+.logo span { color: #7da9c2; }
+
+.day-label {
+  background: #fff;
+  border: 2px solid #ead8c9;
+  border-radius: 20px;
+  padding: 8px 15px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.order-card {
+  background: #fffdf8;
+  border: 3px solid var(--outline);
+  border-radius: 20px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 0 #e5cfc0;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.order-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.order-icon {
+  background: #f9d9e1;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+}
+
+.order-title {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.order-number {
+  margin-left: auto;
+  color: #a88b7e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.order-text {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.order-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.order-chip {
+  background: #fff0e9;
+  border: 1.5px solid #e9c6b6;
+  border-radius: 14px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.counter {
+  background: #f7d9cf;
+  border: 3px solid var(--outline);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 5px 0 #dfb9ab;
+}
+
+.counter-heading {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 12px 3px;
+}
+
+.station-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+}
+
+.station {
+  background: #fff9ed;
+  border: 2px solid #a77e6d;
+  border-radius: 17px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.station h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #987064;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.food-item {
+  border: 1.5px solid #e9d6c5;
+  background: #fffdf8;
+  border-radius: 13px;
+  min-height: 104px;
+  padding: 7px 3px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: transform .12s, box-shadow .12s;
+}
+
+.food-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 0 #e6cfc0;
+}
+
+.food-item:active { cursor: grabbing; }
+
+.food-item svg {
+  width: 57px;
+  height: 52px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.food-name {
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dragging {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  transform: scale(1.08);
+  opacity: .92;
+  width: 92px;
+  height: 92px;
+  background: white;
+  border: 2px solid var(--outline);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 5px 12px #8d6c5b44;
+}
+
+.dragging svg { width: 62px; height: 58px; }
+
+.tray-area {
+  margin-top: 19px;
+  background: #d8e8ef;
+  border: 3px solid var(--outline);
+  border-radius: 21px;
+  padding: 13px;
+  box-shadow: 0 5px 0 #b6d1dc;
+  transition: background .2s;
+}
+
+.tray-area.over {
+  background: #c5e7d1;
+}
+
+.tray-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.tray-heading h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tray-heading span {
+  font-size: 11px;
+  font-weight: 700;
+  color: #668b9b;
+}
+
+.tray {
+  min-height: 105px;
+  background: #fffdf8;
+  border: 2px dashed #9cb9c5;
+  border-radius: 15px;
+  padding: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tray-empty {
+  width: 100%;
+  text-align: center;
+  color: #a2b5b9;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 24px 0;
+}
+
+.tray-item {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border: 1.5px solid #ead9c8;
+  background: #fff8ed;
+  border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tray-item svg {
+  width: 43px;
+  height: 40px;
+}
+
+.tray-item small {
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.remove-hint {
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  background: #f2aebc;
+  border: 1px solid var(--outline);
+  border-radius: 50%;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.clear-button {
+  background: #fff;
+  border: 2px solid #d8b9a9;
+  color: #94756a;
+  border-radius: 13px;
+  padding: 12px 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.done-button {
+  background: #a9cba0;
+  border: 2px solid #6e8e69;
+  color: #fff;
+  border-radius: 14px;
+  padding: 13px 32px;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 4px 0 #779c70;
+  cursor: pointer;
+}
+
+.done-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #779c70;
+}
+
+.done-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.message {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 20px;
+  margin-top: 12px;
+  color: #8d7467;
+}
+
+@media (max-width: 620px) {
+  body { padding: 10px; }
+  .logo { font-size: 25px; }
+  .counter { padding: 10px; }
+  .station-grid { gap: 8px; }
+  .station { padding: 8px 5px; }
+  .items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .food-item { min-height: 95px; }
+  .food-item svg { width: 49px; }
+  .order-card { padding: 12px; }
+  .done-button { padding: 12px 22px; }
+}
+</style>
+</head>
+<body>
+<div class="game">
+  <header>
+    <div class="logo">doodle <span>cafe</span></div>
+    <div class="day-label">A cozy little cafe</div>
+  </header>
+
+  <section class="order-card">
+    <div class="order-top">
+      <div class="order-icon">♡</div>
+      <div class="order-title">New order!</div>
+      <div class="order-number" id="orderNumber">ORDER #1</div>
+    </div>
+    <div class="order-text" id="orderText">
+      Hi! I'd like a little something sweet, please.
+    </div>
+    <div class="order-items" id="orderItems"></div>
+  </section>
+
+  <section class="counter">
+    <h2 class="counter-heading">The counter</h2>
+    <div class="station-grid">
+      <div class="station">
+        <h3>♡ BAKERY CASE</h3>
+        <div class="items" id="bakeryItems"></div>
+      </div>
+      <div class="station">
+        <h3>♡ DRINKS</h3>
+        <div class="items" id="drinkItems"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tray-area" id="trayArea">
+    <div class="tray-heading">
+      <h2>Serving tray</h2>
+      <span>Drag your order here ↓</span>
+    </div>
+    <div class="tray" id="tray">
+      <div class="tray-empty">Your serving tray is waiting...</div>
+    </div>
+  </section>
+
+  <div class="bottom-row">
+    <button class="clear-button" id="clearButton">Clear tray</button>
+    <button class="done-button" id="doneButton">DONE ♡</button>
+  </div>
+  <div class="message" id="message"></div>
+</div>
+
+<script>
+const outline = "#795b51";
+
+const drawings = {
+  cookie: `<svg viewBox="0 0 80 65">
+    <path d="M12 35 C10 17 26 7 42 10 C61 8 70 24 67 40 C64 55 48 59 31 55 C17 54 10 47 12 35Z" fill="#e9b879" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M23 25 l4 -2 M48 18 l3 3 M55 39 l-2 3 M30 45 l3 -2 M43 34 l3 -2" stroke="#a96c42" stroke-width="5" stroke-linecap="round"/>
+    <path d="M20 17 Q27 12 32 13" fill="none" stroke="#f9dfae" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+  muffin: `<svg viewBox="0 0 80 65">
+    <path d="M15 32 Q10 12 26 17 Q31 3 42 15 Q59 6 63 23 Q73 28 64 38 L59 56 L22 56 L17 39Z" fill="#dca16f" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 37 L58 37 L55 56 L25 56Z" fill="#f0c98d" stroke="${outline}" stroke-width="2"/>
+    <path d="M29 25 l3 2 M48 20 l3 2 M43 31 l3 2" stroke="#9b6749" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  cupcake: `<svg viewBox="0 0 80 65">
+    <path d="M19 31 Q9 22 22 19 Q18 7 32 13 Q40 0 48 12 Q64 5 61 21 Q73 26 61 33Z" fill="#f4b8c9" stroke="${outline}" stroke-width="3"/>
+    <path d="M20 32 L60 32 L53 57 L27 57Z" fill="#f5d99b" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M29 39 L31 53 M40 39 L40 54 M51 39 L49 53" stroke="#d8a86c" stroke-width="2"/>
+    <circle cx="40" cy="9" r="3" fill="#f7d78c"/>
+  </svg>`,
+  donut: `<svg viewBox="0 0 80 65">
+    <path d="M12 34 C12 16 28 8 42 11 C59 8 69 21 67 36 C65 52 51 57 36 55 C20 56 11 47 12 34Z" fill="#dca16f" stroke="${outline}" stroke-width="3"/>
+    <path d="M15 29 Q22 12 38 17 Q54 8 64 25 Q55 31 49 27 Q39 34 31 26 Q23 34 15 29Z" fill="#f6b8c9" stroke="${outline}" stroke-width="2.5"/>
+    <ellipse cx="40" cy="35" rx="8" ry="7" fill="#fff9ed" stroke="${outline}" stroke-width="2.5"/>
+    <path d="M26 22 l3 3 M49 17 l3 3 M57 27 l3 2" stroke="#fff5dc" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>`,
+  brownie: `<svg viewBox="0 0 80 65">
+    <path d="M13 22 L57 14 L68 44 L24 54Z" fill="#986047" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M13 22 L57 14 L62 23 L19 32Z" fill="#b77a57" stroke="${outline}" stroke-width="2"/>
+    <circle cx="29" cy="25" r="3" fill="#f4d3a0"/>
+    <circle cx="47" cy="20" r="3" fill="#f4d3a0"/>
+    <path d="M25 37 l32 -6" stroke="#d99d73" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+  croissant: `<svg viewBox="0 0 80 65">
+    <path d="M12 43 Q11 20 30 20 Q40 4 51 19 Q70 17 68 43 Q56 57 42 47 Q25 59 12 43Z" fill="#e8b36f" stroke="${outline}" stroke-width="3"/>
+    <path d="M18 41 Q26 29 35 25 Q39 35 42 47 M45 23 Q51 31 59 40" fill="none" stroke="#bb814c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M25 23 Q34 15 42 19" fill="none" stroke="#f8d59a" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+  juice: `<svg viewBox="0 0 80 65">
+    <path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f6b85e" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M27 31 L54 31 L52 55 L28 55Z" fill="#f4a83f"/>
+    <path d="M42 14 L50 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M29 20 Q35 17 40 20" fill="none" stroke="#ffe4a4" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="39" cy="40" r="4" fill="#ffdc83"/>
+  </svg>`,
+  lemonade: `<svg viewBox="0 0 80 65">
+    <path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f7df80" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M27 30 L54 30 L52 55 L28 55Z" fill="#f6d65c"/>
+    <path d="M40 14 L48 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="42" cy="36" r="9" fill="#fff0a8" stroke="#d9b55b" stroke-width="2"/>
+    <path d="M42 28 L42 44 M34 36 L50 36" stroke="#d9b55b" stroke-width="1.5"/>
+  </svg>`,
+  matcha: `<svg viewBox="0 0 80 65">
+    <path d="M22 13 L58 13 L54 57 L26 57Z" fill="#b6d39c" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M26 26 L55 26 L53 55 L28 55Z" fill="#9bbd83"/>
+    <path d="M42 14 L48 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M30 19 Q40 13 50 19" fill="none" stroke="#e5f0d3" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="40" cy="37" r="5" fill="#d9e7c5"/>
+  </svg>`,
+  chocolate: `<svg viewBox="0 0 80 65">
+    <path d="M22 13 L58 13 L54 57 L26 57Z" fill="#d8b2a0" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M26 28 L55 28 L53 55 L28 55Z" fill="#a8735d"/>
+    <path d="M42 14 L49 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M31 19 Q40 15 49 19" fill="none" stroke="#f1d7c7" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="37" cy="38" r="4" fill="#d6a58c"/>
+  </svg>`
+};
+
+const products = [
+  {id:"cookie", name:"Cookie", type:"food"},
+  {id:"muffin", name:"Muffin", type:"food"},
+  {id:"cupcake", name:"Cupcake", type:"food"},
+  {id:"donut", name:"Donut", type:"food"},
+  {id:"brownie", name:"Brownie", type:"food"},
+  {id:"croissant", name:"Croissant", type:"food"},
+  {id:"juice", name:"Orange juice", type:"drink"},
+  {id:"lemonade", name:"Lemonade", type:"drink"},
+  {id:"matcha", name:"Iced matcha", type:"drink"},
+  {id:"chocolate", name:"Iced chocolate milk", type:"drink"}
+];
+
+const bakery = document.getElementById("bakeryItems");
+const drinks = document.getElementById("drinkItems");
+const tray = document.getElementById("tray");
+const trayArea = document.getElementById("trayArea");
+const message = document.getElementById("message");
+const doneButton = document.getElementById("doneButton");
+
+products.forEach(product => {
+  const button = document.createElement("button");
+  button.className = "food-item";
+  button.dataset.id = product.id;
+  button.innerHTML = drawings[product.id] +
+    `<span class="food-name">${product.name}</span>`;
+  button.addEventListener("pointerdown", startDrag);
+  (product.type === "food" ? bakery : drinks).appendChild(button);
+});
+
+let currentOrder = [];
+let trayItems = [];
+let orderCount = 1;
+let dragElement = null;
+let draggedProduct = null;
+
+function newOrder() {
+  const count = 2 + Math.floor(Math.random() * 3);
+  const shuffled = [...products].sort(() => Math.random() - .5);
+  currentOrder = shuffled.slice(0, count).map(p => ({
+    id: p.id,
+    quantity: 1 + (Math.random() < .25 ? 1 : 0)
+  }));
+
+  document.getElementById("orderNumber").textContent =
+    "ORDER #" + orderCount;
+
+  const names = currentOrder.map(item => {
+    const product = products.find(p => p.id === item.id);
+    return item.quantity > 1
+      ? item.quantity + " " + product.name.toLowerCase() + "s"
+      : "a " + product.name.toLowerCase();
+  });
+
+  document.getElementById("orderText").textContent =
+    "Hi! I'd like " + names.join(", ").replace(/, ([^,]*)$/, " and $1") + ", please!";
+
+  document.getElementById("orderItems").innerHTML =
+    currentOrder.map(item => {
+      const product = products.find(p => p.id === item.id);
+      return `<div class="order-chip">${item.quantity} × ${product.name}</div>`;
+    }).join("");
+
+  trayItems = [];
+  renderTray();
+  message.textContent = "";
+}
+
+function startDrag(event) {
+  event.preventDefault();
+  const id = event.currentTarget.dataset.id;
+  draggedProduct = products.find(p => p.id === id);
+
+  dragElement = document.createElement("div");
+  dragElement.className = "dragging";
+  dragElement.innerHTML = drawings[id];
+  document.body.appendChild(dragElement);
+  moveDrag(event);
+
+  event.currentTarget.setPointerCapture(event.pointerId);
+  event.currentTarget.addEventListener("pointermove", moveDrag);
+  event.currentTarget.addEventListener("pointerup", endDrag, {once:true});
+  event.currentTarget.addEventListener("pointercancel", cancelDrag, {once:true});
+}
+
+function moveDrag(event) {
+  if (!dragElement) return;
+  dragElement.style.left = (event.clientX - 46) + "px";
+  dragElement.style.top = (event.clientY - 46) + "px";
+
+  const rect = trayArea.getBoundingClientRect();
+  const over = event.clientX >= rect.left &&
+    event.clientX <= rect.right &&
+    event.clientY >= rect.top &&
+    event.clientY <= rect.bottom;
+  trayArea.classList.toggle("over", over);
+}
+
+function endDrag(event) {
+  if (!dragElement) return;
+  const rect = trayArea.getBoundingClientRect();
+  const dropped = event.clientX >= rect.left &&
+    event.clientX <= rect.right &&
+    event.clientY >= rect.top &&
+    event.clientY <= rect.bottom;
+
+  if (dropped) {
+    trayItems.push(draggedProduct.id);
+    renderTray();
+    message.textContent = "";
+  }
+
+  cancelDrag();
+}
+
+function cancelDrag() {
+  if (dragElement) dragElement.remove();
+  dragElement = null;
+  draggedProduct = null;
+  trayArea.classList.remove("over");
+}
+
+function renderTray() {
+  tray.innerHTML = "";
+
+  if (trayItems.length === 0) {
+    tray.innerHTML = '<div class="tray-empty">Your serving tray is waiting...</div>';
+    return;
+  }
+
+  trayItems.forEach((id, index) => {
+    const product = products.find(p => p.id === id);
+    const item = document.createElement("div");
+    item.className = "tray-item";
+    item.innerHTML = drawings[id] +
+      `<small>${product.name}</small><span class="remove-hint">×</span>`;
+    item.title = "Tap to remove";
+    item.addEventListener("click", () => {
+      trayItems.splice(index, 1);
+      renderTray();
+    });
+    tray.appendChild(item);
+  });
+}
+
+function checkOrder() {
+  const needed = {};
+  const served = {};
+
+  currentOrder.forEach(item => needed[item.id] = item.quantity);
+  trayItems.forEach(id => served[id] = (served[id] || 0) + 1);
+
+  const allCorrect = Object.keys(needed).every(id =>
+    served[id] === needed[id]
+  ) && Object.keys(served).every(id =>
+    served[id] === (needed[id] || 0)
+  );
+
+  if (allCorrect) {
+    message.textContent = "Perfect! Your order is ready. ♡";
+    doneButton.textContent = "NEXT ORDER →";
+    doneButton.onclick = () => {
+      orderCount++;
+      doneButton.textContent = "DONE ♡";
+      doneButton.onclick = checkOrder;
+      newOrder();
+    };
+  } else {
+    message.textContent = "Not quite! Check the order and try again.";
+    doneButton.textContent = "DONE ♡";
+  }
+}
+
+doneButton.onclick = checkOrder;
+
+document.getElementById("clearButton").addEventListener("click", () => {
+  trayItems = [];
+  renderTray();
+  message.textContent = "";
+  doneButton.textContent = "DONE ♡";
+  doneButton.onclick = checkOrder;
+});
+
+newOrder();
+</script>
+</body>
+</html>
