@@ -3,380 +3,431 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Doodle Cafe</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap');
 
 :root {
-  --pink: #f5b9c8;
-  --blue: #b9dced;
-  --yellow: #f7df9d;
-  --cream: #fff9ed;
-  --brown: #72534a;
-  --outline: #795b51;
-  --green: #c5d9b5;
+  --pink:#f4bdca;
+  --blue:#c4e0ed;
+  --yellow:#f6dfa0;
+  --cream:#fff9ef;
+  --brown:#74564b;
+  --green:#b9d2a9;
+  --line:#806257;
 }
 
-* { box-sizing: border-box; }
-
+* { box-sizing:border-box; }
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: #fff5e8;
-  color: var(--brown);
-  font-family: 'Quicksand', sans-serif;
-  padding: 18px;
+  margin:0;
+  background:#fff5e9;
+  color:var(--brown);
+  font-family:Quicksand,sans-serif;
 }
+button { font:inherit; cursor:pointer; color:inherit; }
+button:focus-visible { outline:3px solid #b77d91; outline-offset:3px; }
 
-button { font-family: inherit; }
-
-.game {
-  max-width: 1050px;
-  margin: auto;
+.screen {
+  display:none;
+  min-height:100vh;
+  padding:18px;
 }
+.screen.active { display:block; }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
+#startScreen {
+  display:none;
+  min-height:100vh;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 15% 20%,#fff 0 3px,transparent 4px),
+    radial-gradient(circle at 85% 75%,#fff 0 4px,transparent 5px),
+    #fae7df;
+  position:relative;
 }
+#startScreen.active { display:flex; }
 
+.start-card {
+  width:min(650px,100%);
+  text-align:center;
+  padding:35px 20px;
+  animation:popIn .9s both;
+  position:relative;
+  z-index:2;
+}
 .logo {
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  color: #b86f81;
+  font-size:clamp(48px,10vw,76px);
+  line-height:1;
+  letter-spacing:-5px;
+  font-weight:800;
+  color:#c77e91;
+  text-shadow:3px 4px 0 #fff;
+  animation:bob 3s ease-in-out infinite;
+}
+.logo span { color:#7eacc2; }
+.subtitle {
+  font-size:15px;
+  font-weight:700;
+  color:#98786c;
+  margin:15px 0 24px;
+}
+.start-art {
+  width:min(350px,85%);
+  margin:15px auto 24px;
+  animation:bob 4s ease-in-out infinite;
+}
+.start-art svg { width:100%; }
+.start-button {
+  border:3px solid var(--line);
+  background:#b8d4aa;
+  color:white;
+  font-weight:800;
+  font-size:19px;
+  padding:15px 50px;
+  border-radius:18px;
+  box-shadow:0 6px 0 #829d76;
+  transition:.2s;
+}
+.start-button:hover { transform:translateY(-3px); }
+.start-button:active { transform:translateY(3px); box-shadow:0 2px 0 #829d76; }
+
+.floaty {
+  position:absolute;
+  font-size:30px;
+  opacity:.7;
+  animation:float 5s ease-in-out infinite;
+}
+.floaty.one { top:15%;left:12%; }
+.floaty.two { top:20%;right:13%;animation-delay:1s; }
+.floaty.three { bottom:17%;left:17%;animation-delay:2s; }
+.floaty.four { bottom:14%;right:15%;animation-delay:1.5s; }
+
+@keyframes popIn {
+  from { opacity:0;transform:scale(.88) translateY(15px); }
+  to { opacity:1;transform:scale(1) translateY(0); }
+}
+@keyframes bob { 50% { transform:translateY(-8px); } }
+@keyframes float {
+  0%,100% { transform:translateY(0) rotate(-8deg); }
+  50% { transform:translateY(-17px) rotate(8deg); }
+}
+@keyframes slideIn {
+  from { opacity:0;transform:translateY(-12px); }
+  to { opacity:1;transform:translateY(0); }
+}
+@keyframes sparkle {
+  0% { transform:scale(.3) rotate(0);opacity:0; }
+  50% { transform:scale(1.3) rotate(20deg);opacity:1; }
+  100% { transform:scale(1) rotate(0);opacity:1; }
 }
 
-.logo span { color: #7da9c2; }
-
-.day-label {
-  background: #fff;
-  border: 2px solid #ead8c9;
-  border-radius: 20px;
-  padding: 8px 15px;
-  font-weight: 700;
-  font-size: 13px;
+/* Game header */
+.game-wrap { max-width:1050px;margin:auto; }
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 auto 14px;
 }
+.small-logo {
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1.5px;
+  color:#c77e91;
+}
+.small-logo span { color:#7eacc2; }
+.stats { display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end; }
+.stat {
+  background:white;
+  border:2px solid #ead8c8;
+  border-radius:14px;
+  padding:8px 11px;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.stat.money { color:#668b61; }
+.stat.stars { color:#c39435; }
 
+/* Order */
 .order-card {
-  background: #fffdf8;
-  border: 3px solid var(--outline);
-  border-radius: 20px;
-  padding: 15px 20px;
-  box-shadow: 0 4px 0 #e5cfc0;
-  margin-bottom: 18px;
-  position: relative;
+  background:#fffdf8;
+  border:3px solid var(--line);
+  border-radius:20px;
+  padding:14px 18px;
+  box-shadow:0 4px 0 #e5cfc0;
+  margin-bottom:17px;
+  animation:slideIn .35s both;
 }
-
-.order-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-}
-
+.order-top { display:flex;align-items:center;gap:10px; }
 .order-icon {
-  background: #f9d9e1;
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  font-size: 19px;
+  width:37px;height:37px;
+  display:grid;place-items:center;
+  background:#f9d9e1;border-radius:50%;
+  font-size:20px;
 }
-
-.order-title {
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.order-number {
-  margin-left: auto;
-  color: #a88b7e;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.order-text {
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-.order-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
+.order-title { font-weight:800;font-size:16px; }
+.order-number { margin-left:auto;color:#a88b7e;font-size:12px;font-weight:800; }
+.order-text { font-size:14px;line-height:1.5;margin-top:9px; }
+.order-items { display:flex;flex-wrap:wrap;gap:7px;margin-top:10px; }
 .order-chip {
-  background: #fff0e9;
-  border: 1.5px solid #e9c6b6;
-  border-radius: 14px;
-  padding: 7px 11px;
-  font-size: 12px;
-  font-weight: 800;
+  background:#fff0e9;
+  border:1.5px solid #e9c6b6;
+  border-radius:12px;
+  padding:6px 10px;
+  font-size:12px;font-weight:800;
 }
 
+/* Timer */
+.timer-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 15px;
+}
+.timer-label { font-size:12px;font-weight:800;white-space:nowrap; }
+.timer-track {
+  height:13px;
+  background:#eaded0;
+  border-radius:20px;
+  overflow:hidden;
+  flex:1;
+}
+.timer-fill {
+  height:100%;
+  width:100%;
+  background:#a9ca9c;
+  border-radius:20px;
+  transition:width .25s linear,background .3s;
+}
+.timer-number { font-size:13px;font-weight:800;min-width:36px;text-align:right; }
+
+/* Counter */
 .counter {
-  background: #f7d9cf;
-  border: 3px solid var(--outline);
-  border-radius: 22px;
-  padding: 16px;
-  box-shadow: 0 5px 0 #dfb9ab;
+  background:#f6d9cf;
+  border:3px solid var(--line);
+  border-radius:22px;
+  padding:14px;
+  box-shadow:0 5px 0 #dfb9ab;
 }
-
-.counter-heading {
-  font-size: 16px;
-  font-weight: 800;
-  margin: 0 0 12px 3px;
-}
-
-.station-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 13px;
-}
-
+.counter-heading { font-size:15px;font-weight:800;margin:0 0 11px 3px; }
+.station-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
 .station {
-  background: #fff9ed;
-  border: 2px solid #a77e6d;
-  border-radius: 17px;
-  padding: 12px;
-  min-width: 0;
+  background:var(--cream);
+  border:2px solid #a77e6d;
+  border-radius:17px;
+  padding:10px;
+  min-width:0;
 }
-
 .station h3 {
-  margin: 0 0 10px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #987064;
+  margin:0 0 9px;
+  font-size:12px;
+  color:#987064;
 }
-
 .items {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
 }
-
 .food-item {
-  border: 1.5px solid #e9d6c5;
-  background: #fffdf8;
-  border-radius: 13px;
-  min-height: 104px;
-  padding: 7px 3px;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: transform .12s, box-shadow .12s;
+  border:1.5px solid #ead8c7;
+  background:#fffdf8;
+  border-radius:13px;
+  min-height:79px;
+  padding:5px;
+  display:grid;
+  place-items:center;
+  touch-action:none;
+  user-select:none;
+  transition:transform .12s,box-shadow .12s;
 }
-
-.food-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 3px 0 #e6cfc0;
-}
-
-.food-item:active { cursor: grabbing; }
-
-.food-item svg {
-  width: 57px;
-  height: 52px;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.food-name {
-  font-size: 10px;
-  font-weight: 800;
-  text-align: center;
-  pointer-events: none;
-}
+.food-item:hover { transform:translateY(-3px);box-shadow:0 3px 0 #e6cfc0; }
+.food-item svg { width:65px;height:59px;pointer-events:none; }
+.food-item:active { cursor:grabbing; }
 
 .dragging {
-  position: fixed;
-  z-index: 20;
-  pointer-events: none;
-  transform: scale(1.08);
-  opacity: .92;
-  width: 92px;
-  height: 92px;
-  background: white;
-  border: 2px solid var(--outline);
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 5px 12px #8d6c5b44;
+  position:fixed;z-index:50;pointer-events:none;
+  width:90px;height:90px;
+  display:grid;place-items:center;
+  background:white;border:2px solid var(--line);
+  border-radius:17px;
+  box-shadow:0 5px 12px #8d6c5b44;
 }
+.dragging svg { width:67px;height:62px; }
 
-.dragging svg { width: 62px; height: 58px; }
-
+/* Tray */
 .tray-area {
-  margin-top: 19px;
-  background: #d8e8ef;
-  border: 3px solid var(--outline);
-  border-radius: 21px;
-  padding: 13px;
-  box-shadow: 0 5px 0 #b6d1dc;
-  transition: background .2s;
+  margin-top:18px;
+  background:#d8e8ef;
+  border:3px solid var(--line);
+  border-radius:21px;
+  padding:12px;
+  box-shadow:0 5px 0 #b6d1dc;
+  transition:background .2s;
 }
-
-.tray-area.over {
-  background: #c5e7d1;
-}
-
-.tray-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 9px;
-}
-
-.tray-heading h2 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.tray-heading span {
-  font-size: 11px;
-  font-weight: 700;
-  color: #668b9b;
-}
-
+.tray-area.over { background:#c5e7d1; }
+.tray-heading { display:flex;justify-content:space-between;align-items:center;margin-bottom:9px; }
+.tray-heading h2 { margin:0;font-size:15px; }
+.tray-heading span { font-size:11px;font-weight:700;color:#668b9b; }
 .tray {
-  min-height: 105px;
-  background: #fffdf8;
-  border: 2px dashed #9cb9c5;
-  border-radius: 15px;
-  padding: 9px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  min-height:94px;
+  background:#fffdf8;
+  border:2px dashed #9cb9c5;
+  border-radius:15px;
+  padding:8px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
 }
-
 .tray-empty {
-  width: 100%;
-  text-align: center;
-  color: #a2b5b9;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 24px 0;
+  width:100%;text-align:center;color:#a2b5b9;
+  font-size:12px;font-weight:700;padding:20px 0;
 }
-
 .tray-item {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  border: 1.5px solid #ead9c8;
-  background: #fff8ed;
-  border-radius: 13px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  position:relative;width:69px;height:69px;
+  border:1.5px solid #ead9c8;background:#fff8ed;
+  border-radius:13px;display:grid;place-items:center;
+  cursor:pointer;animation:popIn .2s both;
 }
-
-.tray-item svg {
-  width: 43px;
-  height: 40px;
-}
-
-.tray-item small {
-  font-size: 9px;
-  font-weight: 800;
-}
-
+.tray-item svg { width:55px;height:51px; }
 .remove-hint {
-  position: absolute;
-  top: -6px;
-  right: -5px;
-  background: #f2aebc;
-  border: 1px solid var(--outline);
-  border-radius: 50%;
-  width: 19px;
-  height: 19px;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
+  position:absolute;top:-6px;right:-5px;
+  background:#f2aebc;border:1px solid var(--line);
+  border-radius:50%;width:19px;height:19px;
+  display:grid;place-items:center;font-size:11px;
 }
-
 .bottom-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin-top:14px;
 }
-
-.clear-button {
-  background: #fff;
-  border: 2px solid #d8b9a9;
-  color: #94756a;
-  border-radius: 13px;
-  padding: 12px 17px;
-  font-weight: 800;
-  cursor: pointer;
+.secondary {
+  background:#fff;border:2px solid #d8b9a9;
+  color:#94756a;border-radius:13px;
+  padding:11px 15px;font-weight:800;
 }
-
 .done-button {
-  background: #a9cba0;
-  border: 2px solid #6e8e69;
-  color: #fff;
-  border-radius: 14px;
-  padding: 13px 32px;
-  font-size: 15px;
-  font-weight: 800;
-  box-shadow: 0 4px 0 #779c70;
-  cursor: pointer;
+  background:#a9cba0;border:2px solid #6e8e69;
+  color:white;border-radius:14px;padding:12px 30px;
+  font-size:15px;font-weight:800;
+  box-shadow:0 4px 0 #779c70;
+}
+.done-button:active { transform:translateY(3px);box-shadow:0 1px 0 #779c70; }
+.message { text-align:center;font-size:13px;font-weight:800;min-height:22px;margin-top:12px; }
+
+/* Shop */
+#shopScreen { background:#fff5e9; }
+.shop-wrap { max-width:850px;margin:auto; }
+.shop-header {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin:5px 0 18px;
+}
+.shop-title { font-size:30px;font-weight:800;color:#b97588; }
+.shop-balance { font-weight:800;color:#678e62;background:white;padding:10px 14px;border-radius:14px;border:2px solid #ead8c8; }
+.shop-intro { background:#fffdf8;border:2px solid #e8d3c5;border-radius:17px;padding:14px;margin-bottom:17px;font-size:13px;line-height:1.6; }
+.shop-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+.shop-card {
+  background:white;border:2px solid #e6d4c5;border-radius:17px;
+  padding:13px;display:flex;align-items:center;gap:12px;
+}
+.shop-picture {
+  width:85px;height:80px;flex-shrink:0;
+  background:#fff8ee;border-radius:13px;display:grid;place-items:center;
+}
+.shop-picture svg { width:75px;height:68px; }
+.shop-info { min-width:0;flex:1; }
+.shop-name { font-weight:800;font-size:14px;margin-bottom:5px; }
+.shop-price { font-size:12px;color:#76946b;font-weight:800;margin-bottom:8px; }
+.buy-button {
+  border:0;border-radius:10px;background:#b7d1a8;
+  color:white;font-size:12px;font-weight:800;padding:8px 12px;
+}
+.buy-button:disabled { background:#d5d5d0;cursor:default; }
+.shop-footer { display:flex;justify-content:center;margin-top:20px; }
+.back-button {
+  border:2px solid var(--line);background:#f4bdca;
+  color:white;border-radius:14px;padding:13px 25px;font-weight:800;
 }
 
-.done-button:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #779c70;
+/* Results */
+.overlay {
+  display:none;position:fixed;inset:0;z-index:100;
+  background:#59483d77;align-items:center;justify-content:center;padding:20px;
 }
-
-.done-button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
+.overlay.show { display:flex; }
+.result-card {
+  width:min(390px,100%);background:#fffaf0;
+  border:3px solid var(--line);border-radius:23px;
+  padding:25px;text-align:center;box-shadow:0 7px 0 #d8c0af;
+  animation:popIn .3s both;
 }
-
-.message {
-  text-align: center;
-  font-size: 13px;
-  font-weight: 800;
-  min-height: 20px;
-  margin-top: 12px;
-  color: #8d7467;
+.result-title { font-size:25px;font-weight:800;color:#bd7d8d; }
+.result-stars { font-size:36px;letter-spacing:5px;color:#e6b94e;margin:12px 0;animation:sparkle .5s both; }
+.result-details { font-size:14px;line-height:1.8;font-weight:700; }
+.result-button {
+  margin-top:17px;border:2px solid #718e68;background:#b4d0a6;
+  color:white;border-radius:13px;padding:12px 25px;font-weight:800;
 }
-
-@media (max-width: 620px) {
-  body { padding: 10px; }
-  .logo { font-size: 25px; }
-  .counter { padding: 10px; }
-  .station-grid { gap: 8px; }
-  .station { padding: 8px 5px; }
-  .items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .food-item { min-height: 95px; }
-  .food-item svg { width: 49px; }
-  .order-card { padding: 12px; }
-  .done-button { padding: 12px 22px; }
+@media(max-width:620px) {
+  .screen { padding:10px; }
+  .small-logo { font-size:21px; }
+  .stat { padding:7px 8px;font-size:11px; }
+  .station-grid { gap:8px; }
+  .station { padding:8px 5px; }
+  .items { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .food-item { min-height:76px; }
+  .food-item svg { width:57px; }
+  .shop-grid { grid-template-columns:1fr; }
+  .shop-title { font-size:25px; }
+  .order-card { padding:12px; }
 }
 </style>
 </head>
 <body>
-<div class="game">
-  <header>
+
+<!-- START PAGE -->
+<section id="startScreen" class="screen active">
+  <div class="floaty one">✿</div>
+  <div class="floaty two">♡</div>
+  <div class="floaty three">✦</div>
+  <div class="floaty four">✿</div>
+  <div class="start-card">
     <div class="logo">doodle <span>cafe</span></div>
-    <div class="day-label">A cozy little cafe</div>
+    <div class="subtitle">a little cafe full of sweet things</div>
+    <div class="start-art">
+      <svg viewBox="0 0 350 200">
+        <path d="M32 169 Q175 184 318 169 L306 194 L44 194Z" fill="#e9c7ae" stroke="#795b51" stroke-width="4"/>
+        <path d="M51 82 Q175 24 299 82 L299 171 L51 171Z" fill="#f8d9cf" stroke="#795b51" stroke-width="4"/>
+        <path d="M51 82 Q175 24 299 82" fill="none" stroke="#795b51" stroke-width="4"/>
+        <path d="M75 85 L275 85 L275 110 L75 110Z" fill="#f4bdca" stroke="#795b51" stroke-width="3"/>
+        <path d="M82 111 L82 165 M268 111 L268 165" stroke="#795b51" stroke-width="3"/>
+        <path d="M128 111 L128 165 M222 111 L222 165" stroke="#795b51" stroke-width="3"/>
+        <rect x="142" y="117" width="66" height="52" rx="8" fill="#b8d4e4" stroke="#795b51" stroke-width="3"/>
+        <path d="M153 147 Q175 132 197 147" fill="none" stroke="#fff9ef" stroke-width="4"/>
+        <path d="M105 69 Q119 38 135 66 Q149 33 165 64 Q185 32 201 66 Q219 37 239 69" fill="#fff0d8" stroke="#795b51" stroke-width="3"/>
+        <path d="M110 70 Q175 89 240 70" fill="none" stroke="#795b51" stroke-width="3"/>
+        <circle cx="175" cy="53" r="7" fill="#f4bdca" stroke="#795b51" stroke-width="2"/>
+        <path d="M155 18 Q175 0 195 18" fill="none" stroke="#e5ae76" stroke-width="5" stroke-linecap="round"/>
+        <path d="M32 48 Q44 34 56 48 Q44 62 32 48Z" fill="#b6d39c" stroke="#795b51" stroke-width="2"/>
+        <path d="M294 42 Q306 28 318 42 Q306 56 294 42Z" fill="#b6d39c" stroke="#795b51" stroke-width="2"/>
+        <circle cx="65" cy="131" r="6" fill="#f4bdca"/>
+        <circle cx="285" cy="130" r="6" fill="#f4bdca"/>
+      </svg>
+    </div>
+    <button class="start-button" id="startButton">START ♡</button>
+  </div>
+</section>
+
+<!-- GAME PAGE -->
+<section id="gameScreen" class="screen">
+<div class="game-wrap">
+  <header>
+    <div class="small-logo">doodle <span>cafe</span></div>
+    <div class="stats">
+      <div class="stat money" id="moneyDisplay">$0</div>
+      <div class="stat stars" id="starDisplay">★ 0</div>
+      <button class="stat" id="shopButton">SHOP ♡</button>
+    </div>
   </header>
 
   <section class="order-card">
@@ -385,11 +436,15 @@ header {
       <div class="order-title">New order!</div>
       <div class="order-number" id="orderNumber">ORDER #1</div>
     </div>
-    <div class="order-text" id="orderText">
-      Hi! I'd like a little something sweet, please.
-    </div>
+    <div class="order-text" id="orderText"></div>
     <div class="order-items" id="orderItems"></div>
   </section>
+
+  <div class="timer-row">
+    <div class="timer-label">TIME LEFT</div>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    <div class="timer-number" id="timerNumber">45s</div>
+  </div>
 
   <section class="counter">
     <h2 class="counter-heading">The counter</h2>
@@ -416,264 +471,438 @@ header {
   </section>
 
   <div class="bottom-row">
-    <button class="clear-button" id="clearButton">Clear tray</button>
+    <button class="secondary" id="clearButton">Clear tray</button>
     <button class="done-button" id="doneButton">DONE ♡</button>
   </div>
   <div class="message" id="message"></div>
 </div>
+</section>
+
+<!-- SHOP PAGE -->
+<section id="shopScreen" class="screen">
+  <div class="shop-wrap">
+    <div class="shop-header">
+      <div class="shop-title">Little Shop ♡</div>
+      <div class="shop-balance" id="shopBalance">$0</div>
+    </div>
+    <div class="shop-intro">
+      Welcome to the bakery shop! Spend your cafe earnings to unlock new treats.
+      Once you buy something, it will be added to your counter and can appear in future orders.
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="shop-footer">
+      <button class="back-button" id="backButton">BACK TO CAFE ♡</button>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER RESULT -->
+<div class="overlay" id="resultOverlay">
+  <div class="result-card">
+    <div class="result-title" id="resultTitle">Order complete!</div>
+    <div class="result-stars" id="resultStars">★★★</div>
+    <div class="result-details" id="resultDetails"></div>
+    <button class="result-button" id="resultButton">NEXT ORDER →</button>
+  </div>
+</div>
 
 <script>
-const outline = "#795b51";
+const $ = id => document.getElementById(id);
 
 const drawings = {
-  cookie: `<svg viewBox="0 0 80 65">
-    <path d="M12 35 C10 17 26 7 42 10 C61 8 70 24 67 40 C64 55 48 59 31 55 C17 54 10 47 12 35Z" fill="#e9b879" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M23 25 l4 -2 M48 18 l3 3 M55 39 l-2 3 M30 45 l3 -2 M43 34 l3 -2" stroke="#a96c42" stroke-width="5" stroke-linecap="round"/>
-    <path d="M20 17 Q27 12 32 13" fill="none" stroke="#f9dfae" stroke-width="3" stroke-linecap="round"/>
-  </svg>`,
-  muffin: `<svg viewBox="0 0 80 65">
-    <path d="M15 32 Q10 12 26 17 Q31 3 42 15 Q59 6 63 23 Q73 28 64 38 L59 56 L22 56 L17 39Z" fill="#dca16f" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M22 37 L58 37 L55 56 L25 56Z" fill="#f0c98d" stroke="${outline}" stroke-width="2"/>
-    <path d="M29 25 l3 2 M48 20 l3 2 M43 31 l3 2" stroke="#9b6749" stroke-width="4" stroke-linecap="round"/>
-  </svg>`,
-  cupcake: `<svg viewBox="0 0 80 65">
-    <path d="M19 31 Q9 22 22 19 Q18 7 32 13 Q40 0 48 12 Q64 5 61 21 Q73 26 61 33Z" fill="#f4b8c9" stroke="${outline}" stroke-width="3"/>
-    <path d="M20 32 L60 32 L53 57 L27 57Z" fill="#f5d99b" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M29 39 L31 53 M40 39 L40 54 M51 39 L49 53" stroke="#d8a86c" stroke-width="2"/>
-    <circle cx="40" cy="9" r="3" fill="#f7d78c"/>
-  </svg>`,
-  donut: `<svg viewBox="0 0 80 65">
-    <path d="M12 34 C12 16 28 8 42 11 C59 8 69 21 67 36 C65 52 51 57 36 55 C20 56 11 47 12 34Z" fill="#dca16f" stroke="${outline}" stroke-width="3"/>
-    <path d="M15 29 Q22 12 38 17 Q54 8 64 25 Q55 31 49 27 Q39 34 31 26 Q23 34 15 29Z" fill="#f6b8c9" stroke="${outline}" stroke-width="2.5"/>
-    <ellipse cx="40" cy="35" rx="8" ry="7" fill="#fff9ed" stroke="${outline}" stroke-width="2.5"/>
-    <path d="M26 22 l3 3 M49 17 l3 3 M57 27 l3 2" stroke="#fff5dc" stroke-width="2.5" stroke-linecap="round"/>
-  </svg>`,
-  brownie: `<svg viewBox="0 0 80 65">
-    <path d="M13 22 L57 14 L68 44 L24 54Z" fill="#986047" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M13 22 L57 14 L62 23 L19 32Z" fill="#b77a57" stroke="${outline}" stroke-width="2"/>
-    <circle cx="29" cy="25" r="3" fill="#f4d3a0"/>
-    <circle cx="47" cy="20" r="3" fill="#f4d3a0"/>
-    <path d="M25 37 l32 -6" stroke="#d99d73" stroke-width="2" stroke-linecap="round"/>
-  </svg>`,
-  croissant: `<svg viewBox="0 0 80 65">
-    <path d="M12 43 Q11 20 30 20 Q40 4 51 19 Q70 17 68 43 Q56 57 42 47 Q25 59 12 43Z" fill="#e8b36f" stroke="${outline}" stroke-width="3"/>
-    <path d="M18 41 Q26 29 35 25 Q39 35 42 47 M45 23 Q51 31 59 40" fill="none" stroke="#bb814c" stroke-width="3" stroke-linecap="round"/>
-    <path d="M25 23 Q34 15 42 19" fill="none" stroke="#f8d59a" stroke-width="3" stroke-linecap="round"/>
-  </svg>`,
-  juice: `<svg viewBox="0 0 80 65">
-    <path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f6b85e" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M27 31 L54 31 L52 55 L28 55Z" fill="#f4a83f"/>
-    <path d="M42 14 L50 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M29 20 Q35 17 40 20" fill="none" stroke="#ffe4a4" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="39" cy="40" r="4" fill="#ffdc83"/>
-  </svg>`,
-  lemonade: `<svg viewBox="0 0 80 65">
-    <path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f7df80" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M27 30 L54 30 L52 55 L28 55Z" fill="#f6d65c"/>
-    <path d="M40 14 L48 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="42" cy="36" r="9" fill="#fff0a8" stroke="#d9b55b" stroke-width="2"/>
-    <path d="M42 28 L42 44 M34 36 L50 36" stroke="#d9b55b" stroke-width="1.5"/>
-  </svg>`,
-  matcha: `<svg viewBox="0 0 80 65">
-    <path d="M22 13 L58 13 L54 57 L26 57Z" fill="#b6d39c" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M26 26 L55 26 L53 55 L28 55Z" fill="#9bbd83"/>
-    <path d="M42 14 L48 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M30 19 Q40 13 50 19" fill="none" stroke="#e5f0d3" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="40" cy="37" r="5" fill="#d9e7c5"/>
-  </svg>`,
-  chocolate: `<svg viewBox="0 0 80 65">
-    <path d="M22 13 L58 13 L54 57 L26 57Z" fill="#d8b2a0" stroke="${outline}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M26 28 L55 28 L53 55 L28 55Z" fill="#a8735d"/>
-    <path d="M42 14 L49 1" stroke="${outline}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M31 19 Q40 15 49 19" fill="none" stroke="#f1d7c7" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="37" cy="38" r="4" fill="#d6a58c"/>
-  </svg>`
+cookie: `<svg viewBox="0 0 80 65">
+<path d="M12 35 Q8 17 27 11 Q48 4 64 22 Q76 41 58 53 Q39 65 20 52 Q11 46 12 35Z" fill="#e9b879" stroke="#795b51" stroke-width="3"/>
+<path d="M24 23 Q31 15 41 18" fill="none" stroke="#f9dfae" stroke-width="4" stroke-linecap="round"/>
+<circle cx="29" cy="30" r="3.5" fill="#87513b"/><circle cx="50" cy="23" r="3.5" fill="#87513b"/><circle cx="53" cy="43" r="3.5" fill="#87513b"/><circle cx="32" cy="47" r="3.5" fill="#87513b"/>
+</svg>`,
+muffin: `<svg viewBox="0 0 80 65">
+<path d="M15 31 Q9 17 23 17 Q25 3 39 14 Q51 4 57 17 Q72 19 65 34 L58 57 L22 57Z" fill="#dca16f" stroke="#795b51" stroke-width="3"/>
+<path d="M22 37 L59 37 L55 56 L26 56Z" fill="#f0c98d" stroke="#795b51" stroke-width="2"/>
+<circle cx="30" cy="25" r="3" fill="#9b6749"/><circle cx="48" cy="20" r="3" fill="#9b6749"/><circle cx="44" cy="32" r="3" fill="#9b6749"/>
+</svg>`,
+cupcake: `<svg viewBox="0 0 80 65">
+<path d="M19 32 Q8 24 22 18 Q17 6 32 13 Q41 0 49 12 Q65 5 61 21 Q74 27 61 34Z" fill="#f4b8c9" stroke="#795b51" stroke-width="3"/>
+<path d="M20 33 L60 33 L53 57 L27 57Z" fill="#f5d99b" stroke="#795b51" stroke-width="3"/>
+<path d="M29 40 L31 53 M40 40 L40 54 M51 40 L49 53" stroke="#d8a86c" stroke-width="2"/>
+<circle cx="40" cy="9" r="3" fill="#f7d78c"/>
+</svg>`,
+donut: `<svg viewBox="0 0 80 65">
+<path d="M10 34 Q10 12 36 10 Q65 8 69 32 Q71 55 42 57 Q14 59 10 34Z" fill="#e5b477" stroke="#795b51" stroke-width="3"/>
+<path d="M15 29 Q21 13 38 17 Q54 8 64 26 Q55 33 47 27 Q37 34 29 27 Q21 35 15 29Z" fill="#f4aebf" stroke="#795b51" stroke-width="2.5"/>
+<ellipse cx="40" cy="35" rx="8" ry="7" fill="#fff9ef" stroke="#795b51" stroke-width="2.5"/>
+<path d="M24 22 l3 3 M51 18 l3 3 M57 28 l3 2" stroke="#fff5dc" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`,
+brownie: `<svg viewBox="0 0 80 65">
+<path d="M12 23 Q13 19 20 18 L56 11 Q62 11 64 18 L69 43 Q69 48 63 49 L27 57 Q21 58 19 53Z" fill="#9a6047" stroke="#795b51" stroke-width="3"/>
+<path d="M15 23 L58 15 L64 25 L21 34Z" fill="#bd7c58" stroke="#795b51" stroke-width="2"/>
+<path d="M24 39 L58 32" stroke="#d99d73" stroke-width="3" stroke-linecap="round"/>
+<circle cx="30" cy="25" r="3" fill="#f5d2a1"/><circle cx="49" cy="21" r="3" fill="#f5d2a1"/>
+</svg>`,
+croissant: `<svg viewBox="0 0 80 65">
+<path d="M11 43 Q7 24 27 20 Q37 3 50 18 Q70 15 69 41 Q59 58 43 48 Q25 59 11 43Z" fill="#e8b36f" stroke="#795b51" stroke-width="3"/>
+<path d="M17 42 Q25 28 35 24 Q39 34 43 47 M46 22 Q51 31 61 40" fill="none" stroke="#bd804b" stroke-width="3" stroke-linecap="round"/>
+<path d="M25 22 Q35 14 43 19" fill="none" stroke="#f8d59a" stroke-width="3" stroke-linecap="round"/>
+</svg>`,
+juice: `<svg viewBox="0 0 80 65">
+<path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f6b85e" stroke="#795b51" stroke-width="3"/>
+<path d="M27 31 L54 31 L52 55 L28 55Z" fill="#f4a83f"/>
+<path d="M42 14 L50 1" stroke="#795b51" stroke-width="3" stroke-linecap="round"/>
+<path d="M29 20 Q35 17 40 20" fill="none" stroke="#ffe4a4" stroke-width="3" stroke-linecap="round"/>
+</svg>`,
+lemonade: `<svg viewBox="0 0 80 65">
+<path d="M23 13 L57 13 L54 57 L26 57Z" fill="#f7df80" stroke="#795b51" stroke-width="3"/>
+<path d="M27 30 L54 30 L52 55 L28 55Z" fill="#f6d65c"/>
+<path d="M40 14 L48 1" stroke="#795b51" stroke-width="3" stroke-linecap="round"/>
+<circle cx="42" cy="37" r="9" fill="#fff0a8" stroke="#d9b55b" stroke-width="2"/>
+<path d="M42 28 L42 46 M33 37 L51 37" stroke="#d9b55b" stroke-width="1.5"/>
+</svg>`,
+matcha: `<svg viewBox="0 0 80 65">
+<path d="M22 13 L58 13 L54 57 L26 57Z" fill="#b6d39c" stroke="#795b51" stroke-width="3"/>
+<path d="M26 26 L55 26 L53 55 L28 55Z" fill="#9bbd83"/>
+<path d="M42 14 L48 1" stroke="#795b51" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 19 Q40 13 50 19" fill="none" stroke="#e5f0d3" stroke-width="3" stroke-linecap="round"/>
+<circle cx="40" cy="37" r="5" fill="#d9e7c5"/>
+</svg>`,
+chocolate: `<svg viewBox="0 0 80 65">
+<path d="M22 13 L58 13 L54 57 L26 57Z" fill="#d8b2a0" stroke="#795b51" stroke-width="3"/>
+<path d="M26 28 L55 28 L53 55 L28 55Z" fill="#a8735d"/>
+<path d="M42 14 L49 1" stroke="#795b51" stroke-width="3" stroke-linecap="round"/>
+<path d="M31 19 Q40 15 49 19" fill="none" stroke="#f1d7c7" stroke-width="3" stroke-linecap="round"/>
+</svg>`,
+cake: `<svg viewBox="0 0 80 65">
+<path d="M13 49 L49 40 L68 48 L32 59Z" fill="#f2c5d0" stroke="#795b51" stroke-width="3"/>
+<path d="M13 28 L49 19 L68 28 L32 38Z" fill="#f8d9e1" stroke="#795b51" stroke-width="3"/>
+<path d="M13 28 L13 49 L32 59 L32 38Z" fill="#eeb1c2" stroke="#795b51" stroke-width="2"/>
+<path d="M32 38 L68 28 L68 48 L32 59Z" fill="#fff0d8" stroke="#795b51" stroke-width="2"/>
+<path d="M28 22 Q39 13 48 19" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+<circle cx="44" cy="19" r="5" fill="#d76d80" stroke="#795b51" stroke-width="1.5"/>
+</svg>`,
+cinnamon: `<svg viewBox="0 0 80 65">
+<path d="M12 37 Q9 14 34 11 Q64 5 68 32 Q71 53 44 55 Q17 58 12 37Z" fill="#d99a61" stroke="#795b51" stroke-width="3"/>
+<path d="M22 36 Q19 21 36 19 Q55 17 57 32 Q59 45 42 46 Q27 48 27 35 Q27 26 38 27 Q47 27 47 35" fill="none" stroke="#a9633f" stroke-width="5" stroke-linecap="round"/>
+<path d="M18 23 Q28 12 40 15" fill="none" stroke="#f7d7a2" stroke-width="3" stroke-linecap="round"/>
+<path d="M22 28 Q35 22 52 29" fill="none" stroke="#fff4e2" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`,
+macaron: `<svg viewBox="0 0 80 65">
+<path d="M15 33 Q15 13 40 14 Q65 13 65 33 L61 39 L19 39Z" fill="#eaa9bd" stroke="#795b51" stroke-width="3"/>
+<path d="M17 37 Q40 31 63 37 L60 45 Q40 53 20 45Z" fill="#fff0df" stroke="#795b51" stroke-width="2"/>
+<path d="M15 42 Q17 56 40 55 Q63 55 65 42 L61 38 Q40 45 19 38Z" fill="#eaa9bd" stroke="#795b51" stroke-width="3"/>
+<path d="M26 24 Q39 18 50 23" fill="none" stroke="#f9dce5" stroke-width="3" stroke-linecap="round"/>
+</svg>`,
+strawberryMilk: `<svg viewBox="0 0 80 65">
+<path d="M21 13 L59 13 L55 57 L25 57Z" fill="#f4c4d2" stroke="#795b51" stroke-width="3"/>
+<path d="M27 27 L54 27 L52 55 L28 55Z" fill="#efa5bc"/>
+<path d="M40 14 L47 1" stroke="#795b51" stroke-width="3" stroke-linecap="round"/>
+<path d="M33 20 Q40 15 48 20" fill="none" stroke="#fff2f0" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 32 Q32 26 32 35 Q32 41 40 46 Q48 41 48 35 Q48 26 40 32Z" fill="#d96e87"/>
+</svg>`,
+blueberry: `<svg viewBox="0 0 80 65">
+<path d="M14 32 Q9 16 26 18 Q34 5 44 16 Q60 7 63 25 Q73 31 63 40 L57 56 L23 56 L17 41Z" fill="#c99a70" stroke="#795b51" stroke-width="3"/>
+<path d="M21 39 L59 39 L55 56 L25 56Z" fill="#e8c18e" stroke="#795b51" stroke-width="2"/>
+<circle cx="29" cy="26" r="4" fill="#7186a9"/><circle cx="46" cy="20" r="4" fill="#7186a9"/><circle cx="52" cy="32" r="4" fill="#7186a9"/>
+</svg>`
 };
 
 const products = [
-  {id:"cookie", name:"Cookie", type:"food"},
-  {id:"muffin", name:"Muffin", type:"food"},
-  {id:"cupcake", name:"Cupcake", type:"food"},
-  {id:"donut", name:"Donut", type:"food"},
-  {id:"brownie", name:"Brownie", type:"food"},
-  {id:"croissant", name:"Croissant", type:"food"},
-  {id:"juice", name:"Orange juice", type:"drink"},
-  {id:"lemonade", name:"Lemonade", type:"drink"},
-  {id:"matcha", name:"Iced matcha", type:"drink"},
-  {id:"chocolate", name:"Iced chocolate milk", type:"drink"}
+ {id:"cookie",name:"Cookie",type:"food"},
+ {id:"muffin",name:"Muffin",type:"food"},
+ {id:"cupcake",name:"Cupcake",type:"food"},
+ {id:"donut",name:"Donut",type:"food"},
+ {id:"brownie",name:"Brownie",type:"food"},
+ {id:"croissant",name:"Croissant",type:"food"},
+ {id:"juice",name:"Orange juice",type:"drink"},
+ {id:"lemonade",name:"Lemonade",type:"drink"},
+ {id:"matcha",name:"Iced matcha",type:"drink"},
+ {id:"chocolate",name:"Iced chocolate milk",type:"drink"},
+ {id:"cake",name:"Strawberry cake",type:"food",price:30},
+ {id:"cinnamon",name:"Cinnamon roll",type:"food",price:45},
+ {id:"macaron",name:"Macaron",type:"food",price:55},
+ {id:"strawberryMilk",name:"Strawberry milk",type:"drink",price:65},
+ {id:"blueberry",name:"Blueberry muffin",type:"food",price:75}
 ];
 
-const bakery = document.getElementById("bakeryItems");
-const drinks = document.getElementById("drinkItems");
-const tray = document.getElementById("tray");
-const trayArea = document.getElementById("trayArea");
-const message = document.getElementById("message");
-const doneButton = document.getElementById("doneButton");
-
-products.forEach(product => {
-  const button = document.createElement("button");
-  button.className = "food-item";
-  button.dataset.id = product.id;
-  button.innerHTML = drawings[product.id] +
-    `<span class="food-name">${product.name}</span>`;
-  button.addEventListener("pointerdown", startDrag);
-  (product.type === "food" ? bakery : drinks).appendChild(button);
-});
-
+let money = 0;
+let stars = 0;
+let orderNumber = 1;
+let unlocked = new Set(products.filter(p => !p.price).map(p => p.id));
 let currentOrder = [];
 let trayItems = [];
-let orderCount = 1;
-let dragElement = null;
-let draggedProduct = null;
+let timeLeft = 0;
+let timerInterval = null;
+let maxTime = 45;
+let drag = null;
+let gameActive = false;
+let resultReady = false;
 
-function newOrder() {
-  const count = 2 + Math.floor(Math.random() * 3);
-  const shuffled = [...products].sort(() => Math.random() - .5);
-  currentOrder = shuffled.slice(0, count).map(p => ({
-    id: p.id,
-    quantity: 1 + (Math.random() < .25 ? 1 : 0)
-  }));
-
-  document.getElementById("orderNumber").textContent =
-    "ORDER #" + orderCount;
-
-  const names = currentOrder.map(item => {
-    const product = products.find(p => p.id === item.id);
-    return item.quantity > 1
-      ? item.quantity + " " + product.name.toLowerCase() + "s"
-      : "a " + product.name.toLowerCase();
-  });
-
-  document.getElementById("orderText").textContent =
-    "Hi! I'd like " + names.join(", ").replace(/, ([^,]*)$/, " and $1") + ", please!";
-
-  document.getElementById("orderItems").innerHTML =
-    currentOrder.map(item => {
-      const product = products.find(p => p.id === item.id);
-      return `<div class="order-chip">${item.quantity} × ${product.name}</div>`;
-    }).join("");
-
-  trayItems = [];
-  renderTray();
-  message.textContent = "";
+function showScreen(id) {
+ document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+ $(id).classList.add("active");
 }
 
-function startDrag(event) {
-  event.preventDefault();
-  const id = event.currentTarget.dataset.id;
-  draggedProduct = products.find(p => p.id === id);
-
-  dragElement = document.createElement("div");
-  dragElement.className = "dragging";
-  dragElement.innerHTML = drawings[id];
-  document.body.appendChild(dragElement);
-  moveDrag(event);
-
-  event.currentTarget.setPointerCapture(event.pointerId);
-  event.currentTarget.addEventListener("pointermove", moveDrag);
-  event.currentTarget.addEventListener("pointerup", endDrag, {once:true});
-  event.currentTarget.addEventListener("pointercancel", cancelDrag, {once:true});
+function updateStats() {
+ $("moneyDisplay").textContent = "$" + money;
+ $("starDisplay").textContent = "★ " + stars;
+ $("shopBalance").textContent = "$" + money;
 }
 
-function moveDrag(event) {
-  if (!dragElement) return;
-  dragElement.style.left = (event.clientX - 46) + "px";
-  dragElement.style.top = (event.clientY - 46) + "px";
-
-  const rect = trayArea.getBoundingClientRect();
-  const over = event.clientX >= rect.left &&
-    event.clientX <= rect.right &&
-    event.clientY >= rect.top &&
-    event.clientY <= rect.bottom;
-  trayArea.classList.toggle("over", over);
-}
-
-function endDrag(event) {
-  if (!dragElement) return;
-  const rect = trayArea.getBoundingClientRect();
-  const dropped = event.clientX >= rect.left &&
-    event.clientX <= rect.right &&
-    event.clientY >= rect.top &&
-    event.clientY <= rect.bottom;
-
-  if (dropped) {
-    trayItems.push(draggedProduct.id);
-    renderTray();
-    message.textContent = "";
-  }
-
-  cancelDrag();
-}
-
-function cancelDrag() {
-  if (dragElement) dragElement.remove();
-  dragElement = null;
-  draggedProduct = null;
-  trayArea.classList.remove("over");
+function renderCounter() {
+ $("bakeryItems").innerHTML = "";
+ $("drinkItems").innerHTML = "";
+ products.filter(p => unlocked.has(p.id)).forEach(p => {
+   const button = document.createElement("button");
+   button.className = "food-item";
+   button.dataset.id = p.id;
+   button.setAttribute("aria-label",p.name);
+   button.innerHTML = drawings[p.id];
+   button.addEventListener("pointerdown",startDrag);
+   (p.type === "food" ? $("bakeryItems") : $("drinkItems")).appendChild(button);
+ });
 }
 
 function renderTray() {
-  tray.innerHTML = "";
+ const tray = $("tray");
+ tray.innerHTML = "";
+ if (!trayItems.length) {
+   tray.innerHTML = '<div class="tray-empty">Your serving tray is waiting...</div>';
+   return;
+ }
+ trayItems.forEach((id,index) => {
+   const item = document.createElement("div");
+   item.className = "tray-item";
+   item.innerHTML = drawings[id] + '<span class="remove-hint">×</span>';
+   item.title = "Tap to remove";
+   item.addEventListener("click",() => {
+     trayItems.splice(index,1);
+     renderTray();
+   });
+   tray.appendChild(item);
+ });
+}
 
-  if (trayItems.length === 0) {
-    tray.innerHTML = '<div class="tray-empty">Your serving tray is waiting...</div>';
-    return;
-  }
+function makeOrder() {
+ const available = products.filter(p => unlocked.has(p.id));
+ const count = Math.min(2 + Math.floor(orderNumber / 2),7);
+ const shuffled = [...available].sort(() => Math.random() - .5);
+ currentOrder = [];
+ for (let i=0;i<count;i++) {
+   const product = shuffled[i % shuffled.length];
+   const existing = currentOrder.find(x => x.id === product.id);
+   if (existing) existing.quantity++;
+   else currentOrder.push({id:product.id,quantity:1});
+ }
+ // A little extra variety as the game progresses.
+ if (orderNumber >= 5 && Math.random() < .4) {
+   currentOrder[0].quantity++;
+ }
+}
 
-  trayItems.forEach((id, index) => {
-    const product = products.find(p => p.id === id);
-    const item = document.createElement("div");
-    item.className = "tray-item";
-    item.innerHTML = drawings[id] +
-      `<small>${product.name}</small><span class="remove-hint">×</span>`;
-    item.title = "Tap to remove";
-    item.addEventListener("click", () => {
-      trayItems.splice(index, 1);
-      renderTray();
-    });
-    tray.appendChild(item);
-  });
+function startOrder() {
+ clearInterval(timerInterval);
+ gameActive = true;
+ resultReady = false;
+ trayItems = [];
+ renderTray();
+ makeOrder();
+
+ $("orderNumber").textContent = "ORDER #" + orderNumber;
+ const names = currentOrder.map(item => {
+   const p = products.find(x => x.id === item.id);
+   return item.quantity > 1
+     ? item.quantity + " " + p.name.toLowerCase() + "s"
+     : "a " + p.name.toLowerCase();
+ });
+ let sentence = names.length === 1 ? names[0] :
+   names.slice(0,-1).join(", ") + " and " + names[names.length-1];
+ $("orderText").textContent = "Hi! I'd like " + sentence + ", please!";
+
+ $("orderItems").innerHTML = currentOrder.map(item => {
+   const p = products.find(x => x.id === item.id);
+   return `<div class="order-chip">${item.quantity} × ${p.name}</div>`;
+ }).join("");
+
+ // Larger orders receive a little more time.
+ maxTime = Math.max(28,50 - Math.floor(orderNumber/3)*3 + currentOrder.length*3);
+ timeLeft = maxTime;
+ updateTimer();
+ $("message").textContent = "";
+ $("doneButton").disabled = false;
+ $("doneButton").textContent = "DONE ♡";
+ timerInterval = setInterval(tick,1000);
+}
+
+function updateTimer() {
+ const percent = Math.max(0,timeLeft/maxTime*100);
+ $("timerFill").style.width = percent + "%";
+ $("timerFill").style.background = percent < 25 ? "#e99aa8" :
+   percent < 50 ? "#edc37b" : "#a9ca9c";
+ $("timerNumber").textContent = timeLeft + "s";
+}
+
+function tick() {
+ if (!gameActive) return;
+ timeLeft--;
+ updateTimer();
+ if (timeLeft <= 0) {
+   clearInterval(timerInterval);
+   gameActive = false;
+   showResult(false,0,0,"Time ran out!");
+ }
+}
+
+function startDrag(event) {
+ if (!gameActive || event.button !== 0) return;
+ event.preventDefault();
+ const id = event.currentTarget.dataset.id;
+ drag = {id,element:document.createElement("div")};
+ drag.element.className = "dragging";
+ drag.element.innerHTML = drawings[id];
+ document.body.appendChild(drag.element);
+ moveDrag(event);
+ document.addEventListener("pointermove",moveDrag);
+ document.addEventListener("pointerup",endDrag,{once:true});
+ document.addEventListener("pointercancel",cancelDrag,{once:true});
+}
+
+function moveDrag(event) {
+ if (!drag) return;
+ drag.element.style.left = (event.clientX-45)+"px";
+ drag.element.style.top = (event.clientY-45)+"px";
+ const rect = $("trayArea").getBoundingClientRect();
+ const over = event.clientX >= rect.left && event.clientX <= rect.right &&
+   event.clientY >= rect.top && event.clientY <= rect.bottom;
+ $("trayArea").classList.toggle("over",over);
+}
+
+function endDrag(event) {
+ if (!drag) return;
+ const rect = $("trayArea").getBoundingClientRect();
+ const dropped = event.clientX >= rect.left && event.clientX <= rect.right &&
+   event.clientY >= rect.top && event.clientY <= rect.bottom;
+ if (dropped) {
+   trayItems.push(drag.id);
+   renderTray();
+   $("message").textContent = "";
+ }
+ cancelDrag();
+}
+
+function cancelDrag() {
+ if (drag) drag.element.remove();
+ drag = null;
+ $("trayArea").classList.remove("over");
+ document.removeEventListener("pointermove",moveDrag);
 }
 
 function checkOrder() {
-  const needed = {};
-  const served = {};
+ if (!gameActive || resultReady) return;
+ const needed = {};
+ const served = {};
+ currentOrder.forEach(x => needed[x.id] = x.quantity);
+ trayItems.forEach(id => served[id] = (served[id]||0)+1);
 
-  currentOrder.forEach(item => needed[item.id] = item.quantity);
-  trayItems.forEach(id => served[id] = (served[id] || 0) + 1);
+ const totalNeeded = Object.values(needed).reduce((a,b)=>a+b,0);
+ const totalServed = trayItems.length;
+ let correct = 0;
+ Object.keys(needed).forEach(id => {
+   correct += Math.min(needed[id],served[id]||0);
+ });
+ const perfect = correct === totalNeeded && totalServed === totalNeeded;
 
-  const allCorrect = Object.keys(needed).every(id =>
-    served[id] === needed[id]
-  ) && Object.keys(served).every(id =>
-    served[id] === (needed[id] || 0)
-  );
+ if (!perfect) {
+   $("message").textContent = "Check your tray! Make sure every item is correct.";
+   return;
+ }
 
-  if (allCorrect) {
-    message.textContent = "Perfect! Your order is ready. ♡";
-    doneButton.textContent = "NEXT ORDER →";
-    doneButton.onclick = () => {
-      orderCount++;
-      doneButton.textContent = "DONE ♡";
-      doneButton.onclick = checkOrder;
-      newOrder();
-    };
-  } else {
-    message.textContent = "Not quite! Check the order and try again.";
-    doneButton.textContent = "DONE ♡";
-  }
+ clearInterval(timerInterval);
+ gameActive = false;
+ const speedBonus = timeLeft >= maxTime*.5;
+ const earnedStars = speedBonus ? 3 : 2;
+ const reward = 8 + totalNeeded*3 + (speedBonus ? 5 : 0);
+ money += reward;
+ stars += earnedStars;
+ updateStats();
+ showResult(true,earnedStars,reward,"Perfect order!");
 }
 
-doneButton.onclick = checkOrder;
+function showResult(success,earnedStars,reward,title) {
+ resultReady = true;
+ $("resultTitle").textContent = title;
+ $("resultStars").textContent = success
+   ? "★".repeat(earnedStars) + "☆".repeat(3-earnedStars)
+   : "☆☆☆";
+ $("resultDetails").innerHTML = success
+   ? `You earned <strong>$${reward}</strong>!<br>You earned <strong>${earnedStars} stars</strong>!`
+   : "No money or stars this time.<br>You'll get another chance!";
+ $("resultButton").textContent = success ? "NEXT ORDER →" : "TRY AGAIN";
+ $("resultOverlay").classList.add("show");
+}
 
-document.getElementById("clearButton").addEventListener("click", () => {
-  trayItems = [];
-  renderTray();
-  message.textContent = "";
-  doneButton.textContent = "DONE ♡";
-  doneButton.onclick = checkOrder;
+function openShop() {
+ clearInterval(timerInterval);
+ gameActive = false;
+ renderShop();
+ showScreen("shopScreen");
+}
+
+function renderShop() {
+ $("shopBalance").textContent = "$" + money;
+ $("shopGrid").innerHTML = "";
+ products.filter(p => p.price).forEach(p => {
+   const bought = unlocked.has(p.id);
+   const card = document.createElement("div");
+   card.className = "shop-card";
+   const picture = document.createElement("div");
+   picture.className = "shop-picture";
+   picture.innerHTML = drawings[p.id];
+   const info = document.createElement("div");
+   info.className = "shop-info";
+   info.innerHTML = `<div class="shop-name">${p.name}</div>
+     <div class="shop-price">${bought ? "Unlocked!" : "$"+p.price}</div>`;
+   const button = document.createElement("button");
+   button.className = "buy-button";
+   button.textContent = bought ? "OWNED ✓" : "BUY";
+   button.disabled = bought || money < p.price;
+   button.addEventListener("click",() => {
+     if (bought || money < p.price) return;
+     money -= p.price;
+     unlocked.add(p.id);
+     updateStats();
+     renderShop();
+   });
+   info.appendChild(button);
+   card.append(picture,info);
+   $("shopGrid").appendChild(card);
+ });
+}
+
+$("startButton").addEventListener("click",() => {
+ showScreen("gameScreen");
+ renderCounter();
+ startOrder();
+});
+$("doneButton").addEventListener("click",checkOrder);
+$("clearButton").addEventListener("click",() => {
+ if (!gameActive) return;
+ trayItems = [];
+ renderTray();
+ $("message").textContent = "";
+});
+$("shopButton").addEventListener("click",openShop);
+$("backButton").addEventListener("click",() => {
+ showScreen("gameScreen");
+ renderCounter();
+ startOrder();
+});
+$("resultButton").addEventListener("click",() => {
+ $("resultOverlay").classList.remove("show");
+ orderNumber++;
+ updateStats();
+ showScreen("gameScreen");
+ renderCounter();
+ startOrder();
 });
 
-newOrder();
+updateStats();
 </script>
 </body>
 </html>
